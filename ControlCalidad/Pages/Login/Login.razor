@@ -1,0 +1,29 @@
+﻿@layout LoginLayout
+@page "/"
+@using ControlCalidad.Shared.Layout
+
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="6">
+        <MudForm>
+            <MudPaper Class="pa-16 ma-2" Elevation="3">
+                <MudGrid Justify="Justify.Center">
+                    <img src="/Images/avatar-usuario.png" width="100px;" height="100px;" class="rounded"/>
+                </MudGrid>
+                <MudGrid Justify="Justify.Center">
+                    <MudItem xs="8">
+                        <MudForm @ref=RefForm>
+                            <MudTextField T="string" Label="Email" @bind-Value=@LoginViewModel.Email Variant="Variant.Outlined" Required=true RequiredError="Debe Ingresar un mail" />
+                            <MudTextField T="string" Label="Contraseña" @bind-Value=@LoginViewModel.Password Variant="Variant.Outlined" InputType="InputType.Password" Required=true RequiredError="Debe Ingresar un mail" />
+                        </MudForm>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Justify="Justify.Center" Class="pa-2">
+                    <MudButton OnClick="_ => LoginAccount()" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    </MudItem>
+</MudGrid>
+<MudOverlay @bind-Visible="isVisible" DarkBackground="true" AutoClose="false">
+    <MudProgressCircular Style="@($"color:{Colors.Shades.White};")" Indeterminate="true" />
+</MudOverlay>

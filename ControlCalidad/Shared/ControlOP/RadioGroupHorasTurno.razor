@@ -1,0 +1,13 @@
+﻿<MudGrid>
+    <MudItem xs="12" Class="d-flex justify-center">
+        <MudText Typo="Typo.h6">Seleccionar Hora</MudText>
+    </MudItem>
+    <MudItem xs="12" Class="d-flex justify-center">
+        <MudRadioGroup @bind-SelectedOption="@DatosNecesariosControlViewModel.DefectosTurnoActualViewModel.HoraSeleccionada">
+            @foreach (var hora in DatosNecesariosControlViewModel.DefectosTurnoActualViewModel.HorasTurno)
+            {
+                <MudRadio Placement="Placement.Top" Color="Color.Primary" Option="@hora">@hora</MudRadio>
+            }
+        </MudRadioGroup>
+    </MudItem>
+</MudGrid>

@@ -1,0 +1,52 @@
+﻿@layout MainLayout
+@page "/OrdenesProduccion"
+@using ControlCalidad.Shared.Layout
+@using ControlCalidad.Shared.PageResponse
+@using CapaDatos.Enums
+
+<AuthorizeView Roles="@RolesEmpleados.SupervisorCalidad.ToString()">
+    <Authorized>
+        <MudPaper Class="pa-16 ma-2" Elevation="3">
+            <MudGrid Justify="Justify.Center">
+                <MudText Typo="Typo.h3">@(OrdenesProduccionDisponiblesParaControl.Count > 0 ? OPDISPONIBLES : OPNODISPONIBLES)</MudText>
+            </MudGrid>
+            @if (OrdenesProduccionDisponiblesParaControl.Count <= 0)
+            {
+                <MudGrid Justify="Justify.Center">
+                    <MudButton Color="Color.Warning" Variant="Variant.Outlined" Class="mr-2" Target="_blanck" OnClick="@(_ => NavigationManager.NavigateTo(NavigationManager.Uri,true))">Actualizar</MudButton>
+                </MudGrid>
+            }
+            <MudGrid Class="mt-4">
+                @foreach (var item in OrdenesProduccionDisponiblesParaControl)
+                {
+                    <MudItem xs="3">
+                        <MudCard Elevation="3">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Class="d-flex justify-center" Typo="Typo.h4">Línea: @item.NumeroLinea</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText><strong>Numero OP:</strong> @item.NumeroOP</MudText>
+                                <MudText><strong>Modelo:</strong> @item.ModeloCalzado</MudText>
+                                <MudText><strong>Color:</strong> @item.ColorCalzado</MudText>
+                                <MudText><strong>Estado:</strong> @(Enum.GetName(typeof(EstadosOP),item.EstadoOP))</MudText>
+                            </MudCardContent>
+                            <MudCardActions Class="justify-center">
+                                <MudButton Variant="Variant.Filled"
+                                       EndIcon="@Icons.Material.Filled.ArrowForwardIos"
+                                       Color="Color.Primary"
+                                       OnClick="@(_ => VincularseOP(item))">
+                                    Vincularse
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudPaper>
+    </Authorized>
+    <NotAuthorized>
+        <Error401 />
+    </NotAuthorized>
+</AuthorizeView>

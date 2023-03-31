@@ -1,0 +1,43 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@if (EmpleadoSession != null)
+{
+    <MudLayout>
+        <AuthorizeView>
+            <Authorized>
+                <MudAppBar Elevation="3">
+                    <MudHidden Breakpoint="Breakpoint.Sm">
+                        <h1>Control de Calidad</h1>
+                    </MudHidden>
+                    <MudSpacer />
+                    <MudHidden Breakpoint="Breakpoint.Sm">
+                        @if (EmpleadoSession.SupervisorCalidad.IdSupervisorCalidad != 0)
+                        {
+                            <MudText>Hola, @EmpleadoSession.SupervisorCalidad.IdEmpleadoNavigation.Nombre @EmpleadoSession.SupervisorCalidad.IdEmpleadoNavigation.Apellido</MudText>
+                        }
+                        @if (EmpleadoSession.SupervisorLinea.IdSupervisorLinea != 0)
+                        {
+                            <MudText>Hola, @EmpleadoSession.SupervisorLinea.IdEmpleadoNavigation.Nombre @EmpleadoSession.SupervisorLinea.IdEmpleadoNavigation.Apellido</MudText>
+                        }
+                        @if (EmpleadoSession.Administrador.IdAdministrador != 0)
+                        {
+                            <MudText>Hola, @EmpleadoSession.Administrador.IdEmpleadoNavigation.Nombre @EmpleadoSession.Administrador.IdEmpleadoNavigation.Apellido</MudText>
+                        }
+                        <MudIconButton Title="Logout" OnClick="_ => Logout()" Style="color: white !important" Class="mx-4" Icon="@Icons.Filled.Logout" />
+                    </MudHidden>
+                </MudAppBar>
+            </Authorized>
+        </AuthorizeView>
+        <MudMainContent>
+            <CascadingValue Value="@EmpleadoSession">
+                <MudContainer MaxWidth="MaxWidth.Large">
+                    @Body
+                </MudContainer>
+            </CascadingValue>
+        </MudMainContent>
+    </MudLayout>
+}

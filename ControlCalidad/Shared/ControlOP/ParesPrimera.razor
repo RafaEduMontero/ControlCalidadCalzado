@@ -1,0 +1,12 @@
+﻿<MudText Typo="Typo.h4">
+    <strong>Pares a Primera: </strong>
+    <MudAvatar Color="Color.Primary" Size="Size.Medium" Variant="Variant.Outlined">
+        @DatosNecesariosControlViewModel.DefectosTurnoActualViewModel.PrimeraViewModels.Where(x => x.HoraGet == DatosNecesariosControlViewModel.DefectosTurnoActualViewModel.HoraSeleccionada).Count()
+    </MudAvatar>
+</MudText>
+<MudItem xs="1" Class="d-flex justify-end">
+    <MudIconButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Error" OnClick="@(_ => IncrementarDecrementarParesPrimera(false))" Icon="@Icons.Material.Filled.Remove" />
+</MudItem>
+<MudItem xs="1">
+    <MudIconButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(_ => IncrementarDecrementarParesPrimera())" Icon="@Icons.Material.Filled.Add" />
+</MudItem>

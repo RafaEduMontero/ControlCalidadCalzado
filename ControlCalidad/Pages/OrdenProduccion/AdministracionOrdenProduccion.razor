@@ -1,0 +1,126 @@
+﻿@layout MainLayout
+@page "/OrdenProduccion"
+@using CapaDatos.Enums
+@using ControlCalidad.Shared.Layout
+@using ControlCalidad.Shared.PageResponse
+
+
+<AuthorizeView Roles="@RolesEmpleados.SupervisorLinea.ToString()">
+    <Authorized>
+        <MudPaper Class="pa-16 ma-2" Elevation="3">
+            @if (!IsVisible)
+            {
+                <MudGrid Class="mb-4" Justify="Justify.Center">
+                    <MudText Typo="Typo.h3">Crear Orden de Producción</MudText>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="3">
+                        <MudTextField Label="Número de OP" Variant="Variant.Outlined" @bind-Value=CrearOPViewModel.Numero Required=true Validation="@(new Func<string, IEnumerable<string>>(ValidadNumeroOP))" />
+                    </MudItem>
+                </MudGrid>
+                <MudForm @ref=RefForm>
+                    <MudGrid>
+                        <MudItem xs="4">
+                            <MudSelect @bind-Value="CrearOPViewModel.IdLinea"
+                                   Margin="Margin.Dense"
+                                   Immediate="true" T="int"
+                                   Label="Líneas"
+                                   Strict="true"
+                                   Variant="Variant.Outlined"
+                                   OffsetY="true"
+                                   Required="true"
+                                   Validation="@(new Func<int, IEnumerable<string>>(ValidarLinea))">
+                                @foreach (var item in DatosNecesariosOPViewModel.LineasDisponibles)
+                                {
+                                    <MudSelectItem T="int" Value="@item.IdLinea">@item.Numero</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudSelect @bind-Value="CrearOPViewModel.IdModelo"
+                                   Margin="Margin.Dense"
+                                   Immediate="true" T="int"
+                                   Label="Modelos"
+                                   Strict="true"
+                                   Variant="Variant.Outlined"
+                                   OffsetY="true"
+                                   Required="true"
+                                   Validation="@(new Func<int, IEnumerable<string>>(ValidarModelo))">
+                                @foreach (var item in DatosNecesariosOPViewModel.ModelosDisponibles)
+                                {
+                                    <MudSelectItem T="int" Value="@item.IdModelo">@item.Sku</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudSelect @bind-Value="CrearOPViewModel.IdColor"
+                                   Margin="Margin.Dense"
+                                   Immediate="true" T="int"
+                                   Label="Colores"
+                                   Strict="true"
+                                   Variant="Variant.Outlined"
+                                   OffsetY="true"
+                                   Required="true"
+                                   Validation="@(new Func<int, IEnumerable<string>>(ValidarColor))">
+                                @foreach (var item in DatosNecesariosOPViewModel.ColoresDisponibles)
+                                {
+                                    <MudSelectItem T="int" Value="@item.IdColor">@item.Codigo</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs=12 Class="d-flex justify-end">
+                            <MudButton Class="" Color="Color.Success" Variant="Variant.Filled" OnClick="_ =>CrearOrdenProduccion()" Size="Size.Small">Crear</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            }
+
+            @if (IsVisible)
+            {
+                <MudGrid Justify="Justify.Center">
+                    <MudText Typo="Typo.h3"><strong>Línea N°@OP.IdLineaNavigation.Numero</strong></MudText>
+                </MudGrid>
+                <MudGrid Class="mt-8">
+                    <MudText Typo="Typo.h6"><strong>OP N°:</strong> @OP.Numero</MudText>
+                    <MudSpacer />
+                    <MudText Typo="Typo.h6">
+                        <strong>Estado:</strong>
+                        <MudChip Variant="Variant.Outlined"
+                             Color="@((OP.IdTipoEstado == (int)EstadosOP.Iniciada) ? Color.Success : Color.Warning)">
+                            @Enum.GetName(typeof(EstadosOP),OP.IdTipoEstado)
+                        </MudChip>
+                    </MudText>
+                    <MudSpacer />
+                    <MudText Typo="Typo.h6"><strong>Color:</strong> @OP.IdColorNavigation.Codigo @OP.IdColorNavigation.Descripcion</MudText>
+                </MudGrid>
+
+                <MudGrid Class="mt-8">
+                    <MudText Typo="Typo.h6"><strong>Modelo:</strong> @OP.IdModeloNavigation.Sku</MudText>
+                    <MudSpacer />
+                    <MudText Typo="Typo.h6"><strong>Fecha Inicio</strong> @OP.FechaInicio.ToShortDateString()</MudText>
+                    <MudSpacer />
+                    <MudText Typo="Typo.h6"><strong>Turno:</strong> Noche</MudText>
+                </MudGrid>
+
+                <MudGrid Class="mt-4" Justify="Justify.Center">
+                    <MudItem>
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" Disabled=IsVisibleBtnIniciar OnClick=@(_ => IniciarOPausarOP(EstadosOP.Iniciada))>Iniciar</MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton Variant="Variant.Filled" Color="Color.Warning" Disabled=IsVisibleBtnPausar OnClick="@(_ => IniciarOPausarOP(EstadosOP.Pausada))">Pausar</MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton Variant="Variant.Filled" Color="Color.Error" Disabled=IsVisibleBtnFinalizar OnClick="@(_ => IniciarOPausarOP(EstadosOP.Finalizada))">Finalizar</MudButton>
+                    </MudItem>
+                </MudGrid>
+            }
+        </MudPaper>
+        <MudOverlay @bind-Visible="Spinner" DarkBackground="true" AutoClose="false">
+            <MudProgressCircular Style="@($"color:{Colors.Shades.White};")" Indeterminate="true" />
+        </MudOverlay>
+    </Authorized>
+    <NotAuthorized>
+        <Error401 />
+    </NotAuthorized>
+</AuthorizeView>
+

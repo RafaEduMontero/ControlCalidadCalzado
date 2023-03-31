@@ -1,0 +1,70 @@
+﻿@layout LoginLayout
+@page "/Monitor/OP/{IdOP:int}/{IdJornadaLaboral:int}"
+@using CapaDatos.Enums
+@using ControlCalidad.Shared.Layout
+
+<MudPaper Class="pa-16 ma-2" Elevation="3">
+    <MudGrid Justify="Justify.Center">
+        <MudText Typo="Typo.h3"><strong>Línea N°@MonitorService.MonitorViewModel.DefectosTurnoActualViewModel.DatosOpViewModel.NumeroLinea</strong></MudText>
+    </MudGrid>
+    <MudGrid Class="mt-8">
+        <MudText Typo="Typo.h6"><strong>OP N°:</strong> @MonitorService.MonitorViewModel.DefectosTurnoActualViewModel.DatosOpViewModel.NumeroOP</MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.h6">
+            <strong>Estado:</strong>
+            <MudChip Variant="Variant.Outlined"
+                     Color="@((MonitorService.MonitorViewModel.DefectosTurnoActualViewModel.DatosOpViewModel.IdEstadoOP == (int)EstadosOP.Iniciada) ? Color.Success : Color.Warning)">
+                @Enum.GetName(typeof(EstadosOP),MonitorService.MonitorViewModel.DefectosTurnoActualViewModel.DatosOpViewModel.IdEstadoOP)
+            </MudChip>
+        </MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.h6"><strong>Color:</strong> @MonitorService.MonitorViewModel.DefectosTurnoActualViewModel.DatosOpViewModel.Color</MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.h6"><strong>Modelo:</strong> @MonitorService.MonitorViewModel.DefectosTurnoActualViewModel.DatosOpViewModel.Sku</MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.h6"><strong>Turno:</strong> @MonitorService.MonitorViewModel.DefectosTurnoActualViewModel.TurnoActual.Descripcion</MudText>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="11">
+            @if (MonitorService.ExistenDefectos)
+            {
+                <MudTable Items="@MonitorService.RegistroDefectos" FixedFooter="true" RowsPerPage="5">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Defectos</MudText>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>Defecto</MudTh>
+                        <MudTh>Cantidad</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@MonitorService.MonitorViewModel.DefectosTurnoActualViewModel.Defectos.Find(x => x.IdDefecto == context.IdDefecto).Descripcion</MudTd>
+                        <MudTh>@context.Cantidad</MudTh>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager InfoFormat=@($"Filas {InfoFormat}")
+                       HorizontalAlignment="HorizontalAlignment.End"
+                       HideRowsPerPage=true/>
+                    </PagerContent>
+                </MudTable>
+            }
+            else
+            {
+                <MudText Typo="Typo.h3">No se cargaron Defectos</MudText>
+            }
+        </MudItem>
+        <MudItem xs="1">
+            <MudPaper Elevation="2" Class="d-flex flex-column align-self-start align-center pa-2" Style="@($"background:{Colors.BlueGrey.Lighten1};")">
+                <MudAvatar Variant=MonitorService.VariantRojo Color="MonitorService.ColorRojo" Class="mb-1"></MudAvatar>
+                <MudAvatar Variant=MonitorService.VariantAmarillo Color="MonitorService.ColorAmarillo" Class="mb-1"></MudAvatar>
+                <MudAvatar Variant=MonitorService.VariantVerde Color="MonitorService.ColorVerde"></MudAvatar>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="6" Class="d-flex">
+            <MudText Typo="Typo.h6"><strong>Límite Inferior:</strong> @MonitorService.MonitorViewModel.DefectosTurnoActualViewModel.DatosOpViewModel.LimiteInferior</MudText>
+            <MudSpacer/>
+            <MudText Typo="Typo.h6"><strong>Límite Superior:</strong> @MonitorService.MonitorViewModel.DefectosTurnoActualViewModel.DatosOpViewModel.LimiteSiperior</MudText>
+        </MudItem>
+    </MudGrid>
+</MudPaper>

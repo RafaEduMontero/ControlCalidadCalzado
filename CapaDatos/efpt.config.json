@@ -1,0 +1,93 @@
+﻿{
+   "CodeGenerationMode": 2,
+   "ContextClassName": "CONTROLDECALIDADContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "CapaDatos",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[dbo].[Administrador]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Color]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Defecto]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Empleado]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[JornadaLaboral]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Linea]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Modelo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[OrdenProduccion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Primera]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[RegistroDefecto]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SupervisorCalidad]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SupervisorLinea]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TipoDefecto]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Turno]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "G100603NT00011\\SQLEXPRESS.CONTROLDECALIDAD",
+   "UncountableWords": null,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false,
+   "UseT4": false
+}

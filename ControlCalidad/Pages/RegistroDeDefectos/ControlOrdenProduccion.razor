@@ -1,0 +1,234 @@
+﻿@layout MainLayout
+@page "/ControlDefectos/OP/{IdOP:int}/{IdJornadaLaboral:int}"
+@using CapaDatos.Enums
+@using CapaDatos.ViewModel.RegistroDefectos
+@using ControlCalidad.Shared.ControlOP
+@using ControlCalidad.Shared.Layout
+
+<MudPaper Class="pa-16 ma-2" Elevation="3">
+    <MudGrid Justify="Justify.Center">
+        <MudText Typo="Typo.h3"><strong>Línea N°@DefectosTurnoActualViewModel.DatosOpViewModel.NumeroLinea</strong></MudText>
+    </MudGrid>
+    <MudGrid Class="mt-8">
+        <MudText Typo="Typo.h6"><strong>OP N°:</strong> @DefectosTurnoActualViewModel.DatosOpViewModel.NumeroOP</MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.h6">
+            <strong>Estado:</strong>
+            <MudChip Variant="Variant.Outlined"
+                     Color="@((DefectosTurnoActualViewModel.DatosOpViewModel.IdEstadoOP == (int)EstadosOP.Iniciada) ? Color.Success : Color.Warning)">
+                @Enum.GetName(typeof(EstadosOP),DefectosTurnoActualViewModel.DatosOpViewModel.IdEstadoOP)
+            </MudChip>
+        </MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.h6"><strong>Color:</strong> @DefectosTurnoActualViewModel.DatosOpViewModel.Color</MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.h6"><strong>Modelo:</strong> @DefectosTurnoActualViewModel.DatosOpViewModel.Sku</MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.h6"><strong>Turno:</strong> @DefectosTurnoActualViewModel.TurnoActual.Descripcion</MudText>
+    </MudGrid>
+    <MudGrid Justify="Justify.Center" Class="mt-8">
+        <MudItem xs="8">
+            <MudPaper Elevation="1" Class="py-2 d-flex justify-center">
+                <MudGrid>
+                    <MudItem xs="12" Class="d-flex justify-center">
+                        <MudText Typo="Typo.h6">Seleccionar Hora</MudText>
+                    </MudItem>
+                    <MudItem xs="12" Class="d-flex justify-center">
+                        <MudRadioGroup @bind-SelectedOption="@DefectosTurnoActualViewModel.HoraSeleccionada">
+                            @foreach (var hora in DefectosTurnoActualViewModel.HorasTurno)
+                            {
+                                <MudRadio Placement="Placement.Top" Color="Color.Primary" Option="@hora">@hora</MudRadio>
+                            }
+                        </MudRadioGroup>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+    <MudGrid Class="mt-8" Style="display: flex;align-items: center">
+        <MudText Typo="Typo.h4">
+            <strong>Pares a Primera: </strong>
+            <MudAvatar Color="Color.Primary" Size="Size.Medium">
+                @TotalParesPrimera()
+            </MudAvatar>
+        </MudText>
+        <MudItem xs="1" Class="d-flex justify-end">
+            <MudIconButton Disabled=@((TotalParesPrimera() == 0 ? true : false) || DisabledAllButtons) Size="Size.Small" Variant="Variant.Filled" Color="Color.Error" OnClick="@(_ => IncrementarDecrementarParesPrimera(false))" Icon="@Icons.Material.Filled.Remove" />
+        </MudItem>
+        <MudItem xs="1">
+            <MudIconButton Disabled=@(DisabledButtons || DisabledAllButtons) Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(_ => IncrementarDecrementarParesPrimera())" Icon="@Icons.Material.Filled.Add" />
+        </MudItem>
+        <MudSpacer />
+        @if (DisabledAllButtons)
+        {
+            <MudButton Color="Color.Warning" Variant="Variant.Outlined" Class="mr-2" Target="_blanck" OnClick="@(_ => NavigationManager.NavigateTo(NavigationManager.Uri,true))">Actualizar</MudButton>
+        }
+        <MudButton Color="Color.Default" Variant="Variant.Outlined"  Class="mr-2">
+            <MudLink Href="@($"/Monitor/OP/{IdOP}/{IdJornadaLaboral}")" Underline="Underline.None" Target="_blank">Monitor</MudLink>
+        </MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Outlined" OnClick="@(_ => DesvincularseOP())">Desvincularse</MudButton>
+    </MudGrid>
+    <MudGrid Class="mt-8" Style="display: flex;align-items: center">
+        <MudText Typo="Typo.h4"><strong>Registro de Defectos</strong></MudText>
+        <MudGrid Justify="Justify.Center" Class="mt-4">
+            <MudItem xs="6">
+                <MudPaper Elevation="1" Class="border-solid border-2">
+                    <MudGrid Justify="Justify.Center">
+                        <MudText><strong>Pie Izquierdo</strong></MudText>
+                    </MudGrid>
+                    <MudGrid Justify="Justify.SpaceAround">
+                        <MudItem xs="5" Class="rounded mt-6 mb-2" Style="@($"background:{Colors.DeepPurple.Lighten4};")">
+                            <MudGrid Justify="Justify.Center">
+                                <MudText><strong>Observado</strong></MudText>
+                            </MudGrid>
+                            <MudGrid Justify="Justify.SpaceAround" Class="mt-4">
+                                @foreach (var defecto in DefectosTurnoActualViewModel.Defectos.Where(x => x.IdTipoDefecto == (int)TipoDefecto.Observado).ToList())
+                                {
+                                    <MudItem xs="6" Class="d-flex justify-center">
+                                        <MudGrid>
+                                            <MudItem xs="12" Class="d-flex justify-center">
+                                                <MudText>
+                                                    @defecto.Descripcion
+                                                    <MudAvatar Color="Color.Primary" Size="Size.Small">@(TotalDefectoRegistrado(defecto))</MudAvatar>
+                                                </MudText>
+                                            </MudItem>
+                                            <MudItem xs="12" Class="d-flex justify-center">
+                                                <MudIconButton Class="mx-1"
+                                                           Size="Size.Small"
+                                                           Disabled=@(((TotalDefectoRegistrado(defecto)) == 0 ? true : false)  || DisabledAllButtons)
+                                                           Variant="Variant.Filled" Color="Color.Error"
+                                                           Icon="@Icons.Material.Filled.Remove"
+                                                           OnClick="@(_ => IncrementarDecrementarDefectos(defecto,true,false,false))" />
+
+                                                <MudIconButton Size="Size.Small"
+                                                           Disabled=@(DisabledButtons || DisabledAllButtons)
+                                                           Variant="Variant.Filled"
+                                                           Color="Color.Primary"
+                                                           Icon="@Icons.Material.Filled.Add"
+                                                           OnClick="@(_ => IncrementarDecrementarDefectos(defecto,true,false))" />
+                                            </MudItem>
+                                        </MudGrid>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudItem>
+                        <MudItem xs="5" Class="rounded mt-6 mb-2" Style="@($"background:{Colors.DeepPurple.Lighten4};")">
+                            <MudGrid Justify="Justify.Center">
+                                <MudText><strong>Reproceso</strong></MudText>
+                            </MudGrid>
+                            <MudGrid Class="mt-4">
+                                @foreach (var defecto in DefectosTurnoActualViewModel.Defectos.Where(x => x.IdTipoDefecto == (int)TipoDefecto.Reproceso).ToList())
+                                {
+                                    <MudItem xs="6" Class="d-flex justify-center">
+                                        <MudGrid>
+                                            <MudItem xs="12" Class="d-flex justify-center">
+                                                <MudText>
+                                                    @defecto.Descripcion
+                                                    <MudAvatar Color="Color.Primary" Size="Size.Small">@(TotalDefectoRegistrado(defecto))</MudAvatar>
+                                                </MudText>
+                                            </MudItem>
+                                            <MudItem xs="12" Class="d-flex justify-center">
+                                                <MudIconButton Class="mx-1"
+                                                           Size="Size.Small"
+                                                           Disabled=@(((TotalDefectoRegistrado(defecto)) == 0 ? true : false) || DisabledAllButtons)
+                                                           Variant="Variant.Filled" Color="Color.Error"
+                                                           Icon="@Icons.Material.Filled.Remove"
+                                                           OnClick="@(_ => IncrementarDecrementarDefectos(defecto,false,false,false))" />
+
+                                                <MudIconButton Size="Size.Small"
+                                                           Disabled=@(DisabledButtons || DisabledAllButtons)
+                                                           Variant="Variant.Filled"
+                                                           Color="Color.Primary"
+                                                           Icon="@Icons.Material.Filled.Add"
+                                                           OnClick="@(_ => IncrementarDecrementarDefectos(defecto,false,false))" />
+                                            </MudItem>
+                                        </MudGrid>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6">
+                <MudPaper Elevation="1" Class="border-solid border-2">
+                    <MudGrid Justify="Justify.Center">
+                        <MudText><strong>Pie Derecho</strong></MudText>
+                    </MudGrid>
+                    <MudGrid Justify="Justify.SpaceAround">
+                        <MudItem xs="5" Class="rounded mt-6 mb-2" Style="@($"background:{Colors.DeepPurple.Lighten4};")">
+                            <MudGrid Justify="Justify.Center">
+                                <MudText><strong>Observado</strong></MudText>
+                            </MudGrid>
+                            <MudGrid Justify="Justify.SpaceAround" Class="mt-4">
+                                @foreach (var defecto in DefectosTurnoActualViewModel.Defectos.Where(x => x.IdTipoDefecto == (int)TipoDefecto.Observado).ToList())
+                                {
+                                    <MudItem xs="6" Class="d-flex justify-center">
+                                        <MudGrid>
+                                            <MudItem xs="12" Class="d-flex justify-center">
+                                                <MudText>
+                                                    @defecto.Descripcion
+                                                    <MudAvatar Color="Color.Primary" Size="Size.Small">@(TotalDefectoRegistrado(defecto,false))</MudAvatar>
+                                                </MudText>
+                                            </MudItem>
+                                            <MudItem xs="12" Class="d-flex justify-center">
+                                                <MudIconButton Class="mx-1"
+                                                           Size="Size.Small"
+                                                           Disabled=@(((TotalDefectoRegistrado(defecto,false)) == 0 ? true : false) || DisabledAllButtons)
+                                                           Variant="Variant.Filled" Color="Color.Error"
+                                                           Icon="@Icons.Material.Filled.Remove"
+                                                           OnClick="@(_ => IncrementarDecrementarDefectos(defecto,true,true,false))" />
+
+                                                <MudIconButton Size="Size.Small"
+                                                           Disabled=@(DisabledButtons || DisabledAllButtons)
+                                                           Variant="Variant.Filled"
+                                                           Color="Color.Primary"
+                                                           Icon="@Icons.Material.Filled.Add"
+                                                           OnClick="@(_ => IncrementarDecrementarDefectos(defecto))" />
+                                            </MudItem>
+                                        </MudGrid>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudItem>
+                        <MudItem xs="5" Class="rounded mt-6 mb-2" Style="@($"background:{Colors.DeepPurple.Lighten4};")">
+                            <MudGrid Justify="Justify.Center">
+                                <MudText><strong>Reproceso</strong></MudText>
+                            </MudGrid>
+                            <MudGrid Justify="Justify.SpaceAround" Class="mt-4">
+                                @foreach (var defecto in DefectosTurnoActualViewModel.Defectos.Where(x => x.IdTipoDefecto == (int)TipoDefecto.Reproceso).ToList())
+                                {
+                                    <MudItem xs="6" Class="d-flex justify-center">
+                                        <MudGrid>
+                                            <MudItem xs="12" Class="d-flex justify-center">
+                                                <MudText>
+                                                    @defecto.Descripcion
+                                                    <MudAvatar Color="Color.Primary" Size="Size.Small">@(TotalDefectoRegistrado(defecto,false))</MudAvatar>
+                                                </MudText>
+                                            </MudItem>
+                                            <MudItem xs="12" Class="d-flex justify-center">
+                                                <MudIconButton Class="mx-1"
+                                                           Size="Size.Small"
+                                                           Disabled=@(((TotalDefectoRegistrado(defecto,false)) == 0 ? true : false) || DisabledAllButtons)
+                                                           Variant="Variant.Filled" Color="Color.Error"
+                                                           Icon="@Icons.Material.Filled.Remove"
+                                                           OnClick="@(_ => IncrementarDecrementarDefectos(defecto,false,true,false))" />
+
+                                                <MudIconButton Size="Size.Small"
+                                                           Disabled=@(DisabledButtons || DisabledAllButtons)
+                                                           Variant="Variant.Filled"
+                                                           Color="Color.Primary"
+                                                           Icon="@Icons.Material.Filled.Add"
+                                                           OnClick="@(_ => IncrementarDecrementarDefectos(defecto,false))" />
+                                            </MudItem>
+                                        </MudGrid>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudGrid>
+</MudPaper>
